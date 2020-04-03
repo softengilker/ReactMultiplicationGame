@@ -11,3 +11,42 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.title {
+  padding-top: 20px;
+  font-weight: 600;
+}
+
+.questiontitle {
+  font-weight: 600;  
+  padding-right: 5px;
+}
+
+.questionsTitle {
+  font-weight: 700;  
+  color: darkred;
+}
+
+.questionspage {
+  margin-top: 30px;
+}
+
+.answerTrue {
+  color: green;
+}
+
+.answerFalse {
+  color: red;
+}
+
+.answerWarning {
+  color: orange;
+}
+
+.centered {
+  padding-top: 7px;
+}
+
+.giveSpace {
+  padding-right: 15px;
+}

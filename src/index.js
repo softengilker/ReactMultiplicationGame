@@ -2,19 +2,29 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Button from 'react-bootstrap/Button'
 import './index.css';
+import 'bootstrap/dist/css/bootstrap.css';
 
-class Game extends React.Component {
+class MultiplicationGame extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
             showQuestions : false,
+            questioncount : 5,
             numberSelections : Array(8).fill( false )
         }
         this.showQuestionsButtonClick = this.showQuestionsButtonClick.bind(this);
+        this.onQuestionCountChanged = this.onQuestionCountChanged.bind(this);
+        this.renderRadioButton = this.renderRadioButton.bind(this);        
     }    
 
     showQuestionsButtonClick() {
+
+        if ( this.state.numberSelections.filter(x => x).length === 0 ) {
+            alert('Lütfen çarpım tablosundan en az bir sayı seçiniz!');
+            return;
+        }
+        
         this.setState({
             showQuestions : true
         });
@@ -35,27 +45,54 @@ class Game extends React.Component {
         return numberArray;
     }
 
+    onQuestionCountChanged(e) {
+        this.setState({
+            questioncount : e.currentTarget.value
+        });
+    }
+
+    createCheckBoxes = () => {
+        let table = []
+    
+        for (let i = 0; i < 8; i++) {
+            table.push( <NumberCheckBox number={i + 2} numberSelected={this.state.numberSelections[i]} toggleNumberSelected={() => this.toggleChangeNumber(i)} /> )
+        }
+
+        return table;
+    }
+
+    renderRadioButton(number) {
+        return (
+            <label class='radio-inline giveSpace'>
+                <input  type='radio' value={number} checked={this.state.questioncount == number} onChange={this.onQuestionCountChanged} /> {number}
+            </label>
+        );
+    }
+ 
     render() {
-        if (this.state.showQuestions) {
+        if (this.state.showQuestions) {            
             return (
-                <div className="game">
-                    <Question numberSelections={this.getSelectedNumbers()} />
+                <div className="questionspage">
+                    <div class="col-md-7">
+                        <label class="questionsTitle">Sorular</label>
+                    </div>    
+                    <Questions numberSelections={this.getSelectedNumbers()} questioncount={this.state.questioncount}/>                                                            
                 </div>
             );            
         } else {        
             return (
-                <div className="game">
-                    Çarpım tablosu Sayılarını Seçiniz:
-                    <br/>                    
-                    <NumberCheckBox number="2" numberSelected={this.state.numberSelections[0]} toggleNumberSelected={() => this.toggleChangeNumber(0)} />
-                    <NumberCheckBox number="3" numberSelected={this.state.numberSelections[1]} toggleNumberSelected={() => this.toggleChangeNumber(1)} />
-                    <NumberCheckBox number="4" numberSelected={this.state.numberSelections[2]} toggleNumberSelected={() => this.toggleChangeNumber(2)} />
-                    <NumberCheckBox number="5" numberSelected={this.state.numberSelections[3]} toggleNumberSelected={() => this.toggleChangeNumber(3)} />
-                    <NumberCheckBox number="6" numberSelected={this.state.numberSelections[4]} toggleNumberSelected={() => this.toggleChangeNumber(4)} />
-                    <NumberCheckBox number="7" numberSelected={this.state.numberSelections[5]} toggleNumberSelected={() => this.toggleChangeNumber(5)} />
-                    <NumberCheckBox number="8" numberSelected={this.state.numberSelections[6]} toggleNumberSelected={() => this.toggleChangeNumber(6)} />
-                    <NumberCheckBox number="9" numberSelected={this.state.numberSelections[7]} toggleNumberSelected={() => this.toggleChangeNumber(7)} />
-                    <Button type="submit" onClick={this.showQuestionsButtonClick}>Soruları Hazırla</Button>
+                <div class="questionspage">
+                    <label class="title">Çarpım Tablosu Sayıları:</label>
+                    <br/>
+                    {this.createCheckBoxes()}
+                    <br/>
+                    <label class="title">Soru Sayısı:</label>
+                    <br/>
+                    {this.renderRadioButton(3)}
+                    {this.renderRadioButton(5)}
+                    {this.renderRadioButton(10)}
+                    <br/><br/>
+                    <Button type="submit" class="btn btn-primary" onClick={this.showQuestionsButtonClick}>Soruları Hazırla</Button>
                 </div>
             );
         }
@@ -80,33 +117,128 @@ class NumberCheckBox extends React.Component {
     }
 
     render() {
+        const idValue = 'inlineCheckbox' + this.props.number;
+        const checkBoxValue = 'option' + this.props.number;
+
         return (
-            <div className="numberCheckBox">
-                <label className="numberLabel">
-                    <input type="checkbox"
-                        checked={this.state.ticked}
-                        onChange={this.onChangeCheckBox}
-                        className="form-check-input"
-                    /> {this.props.number}
-                </label>
-            </div>
+            <label class="checkbox-inline giveSpace">
+                <input type="checkbox" id={idValue} value={checkBoxValue} checked={this.state.ticked} onChange={this.onChangeCheckBox} /> {this.props.number}
+            </label> 
         );
     }    
 }
   
-class Question extends React.Component {
+class Questions extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            showAnswers : 0,
+            numbers : this.generateNumberValues()
         }
+        this.checkAnswersButtonClick = this.checkAnswersButtonClick.bind(this);
     }       
+
+    generateNumberValues = () => {
+        
+        let numbersArray = [];
+
+        for (let i = 0; i < this.props.questioncount; i++) {
+            numbersArray.push( [] );
+        }
+
+        for (let i = 0; i < this.props.questioncount; i++) {
+            numbersArray[i].push( this.props.numberSelections[Math.floor(Math.random() * this.props.numberSelections.length)] );
+            numbersArray[i].push( Math.floor(Math.random() * 10) + 1 ); 
+        }        
+
+        return numbersArray;
+    }
+
+    createTable = () => {
+        let table = []
+    
+        // Outer loop to create parent
+        for (let i = 0; i < this.props.questioncount; i++) {
+          table.push( <Question number={this.state.numbers[i][0]} secondNumber={this.state.numbers[i][1]} showanswer={this.state.showAnswers} numberindex={i+1} /> )
+          table.push( <br/> )
+        }
+        return table
+    }
+
+    checkAnswersButtonClick() {
+        this.setState({
+            showAnswers : 1
+        });
+    }
 
     render() {
         return (
             <div className="game">
-                Sorusunun Yanıtı Nedir?
-                {this.props.numberSelections.length}
+                {this.createTable()}
+                <div class="row">
+                    <div class="col-md-4">
+                        <Button type="submit" onClick={this.checkAnswersButtonClick}>Yanıtları Kontrol</Button>
+                    </div>
+                    <div class="col-md-4">
+                        <Button onClick={() => window.location.reload(false)}>Tekrar Oyna</Button>
+                    </div>
+                </div>                
+            </div>
+        );
+    }    
+}
+
+class Question extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            numberInputValue : ''                       
+        }
+    }       
+
+    showResult = () => {
+        if ( this.props.showanswer === 1 ) {
+            let resultText = '';
+            let labelClass = 'answerWarning';
+           
+            if (this.state.numberInputValue === '') {
+                resultText = 'Lütfen bir değer giriniz'
+            } else if ( isNaN(this.state.numberInputValue) ) {
+                resultText = 'Lütfen bir numarasal bir değer giriniz'
+            } else if ( parseInt(this.props.number) * parseInt(this.props.secondNumber) === parseInt(this.state.numberInputValue) ) {
+                resultText = 'Doğru'
+                labelClass = 'answerTrue';
+            } else {
+                resultText = 'Yanlış'
+                labelClass = 'answerFalse';
+            }
+
+            return ( <label class={labelClass}>{resultText}</label>);
+        }
+    }
+
+    updateInputValue(evt) {
+        this.setState({
+            numberInputValue: evt.target.value
+        });
+    }    
+
+    render() {
+        const inputidval = 'inputtext' + this.props.numberindex;
+
+        return (
+            <div class="row">
+                <div class="col-md-3 centered">
+                    <label class="questiontitle">{this.props.numberindex})</label>
+                    <label class="control-label" for={inputidval}>{this.props.number} X {this.props.secondNumber} sorusunun yanıtı nedir?</label>
+                </div>
+                <div class="col-md-1">
+                    <input type="text" class="form-control" value={this.state.numberInputValue} onChange={evt => this.updateInputValue(evt)} id={inputidval}/>
+                </div>
+                <div class="col-md-4">
+                    {this.showResult()}
+                </div>                                    
             </div>
         );
     }    
@@ -115,8 +247,6 @@ class Question extends React.Component {
   // ========================================
   
   ReactDOM.render(
-    <Game />,
+    <MultiplicationGame />,
     document.getElementById('root')
   );
-
-  // https://appdividend.com/2018/09/25/how-to-save-multiple-checkboxes-values-in-react-js/
