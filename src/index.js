@@ -73,6 +73,7 @@ class MultiplicationGame extends React.Component {
         if (this.state.showQuestions) {            
             return (
                 <div className="questionspage">
+                    <Timer/>
                     <div class="col-md-7">
                         <label class="questionsTitle">Sorular</label>
                     </div>    
@@ -251,6 +252,48 @@ class Question extends React.Component {
                 </div>                                    
             </div>
         );
+    }    
+}
+
+class Timer extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            minute : 0,
+            second : 0
+        }
+    }
+
+    componentDidMount() {
+        this.myInterval = setInterval( () => {
+            const { second, minute } = this.state
+
+            this.setState({
+                second : second + 1
+            });
+
+            if (second === 59) {
+                this.setState({
+                    second : 0,
+                    minute : minute + 1
+                });    
+            }
+        }, 1000)
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.myInterval)
+    }
+    
+    render() {
+        const { second, minute } = this.state
+
+        return (
+            <div>
+                <label class="timerText">Geçen Süre: {minute < 10 ? `0${minute}` : minute}:{second < 10 ? `0${second}` : second}</label>
+            </div>
+        )
     }    
 }
 

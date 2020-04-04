@@ -50,3 +50,10 @@ code {
 .giveSpace {
   padding-right: 15px;
 }
+
+.timerText {
+  padding-bottom: 20px;
+  color: blueviolet;
+  font-weight: 600;
+  font-size: 23px;
+}
