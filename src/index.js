@@ -11,12 +11,36 @@ class MultiplicationGame extends React.Component {
         this.state = {
             showQuestions : false,
             questioncount : 5,
-            numberSelections : Array(8).fill( false )
+            numberSelections : Array(8).fill( false ),
+            minute : 0,
+            second : 0
         }
         this.showQuestionsButtonClick = this.showQuestionsButtonClick.bind(this);
         this.onQuestionCountChanged = this.onQuestionCountChanged.bind(this);
-        this.renderRadioButton = this.renderRadioButton.bind(this);        
+        this.renderRadioButton = this.renderRadioButton.bind(this);
+        this.stopTimer = this.stopTimer.bind(this);
     }    
+
+    componentDidMount() {
+        this.myInterval = setInterval( () => {
+            const { second, minute } = this.state
+
+            this.setState({
+                second : second + 1
+            });
+
+            if (second === 59) {
+                this.setState({
+                    second : 0,
+                    minute : minute + 1
+                });    
+            }
+        }, 1000)
+    }
+
+    stopTimer() {
+        clearInterval(this.myInterval)
+    }
 
     showQuestionsButtonClick() {
 
@@ -26,7 +50,9 @@ class MultiplicationGame extends React.Component {
         }
         
         this.setState({
-            showQuestions : true
+            showQuestions : true,
+            second : 0,
+            minute : 0
         });
     }
 
@@ -61,6 +87,10 @@ class MultiplicationGame extends React.Component {
         return table;
     }
 
+    toggleGameCompleted = () => {
+        this.stopTimer();
+    }     
+
     renderRadioButton(number) {
         return (
             <label class='radio-inline giveSpace'>
@@ -70,14 +100,18 @@ class MultiplicationGame extends React.Component {
     }
  
     render() {
-        if (this.state.showQuestions) {            
+        const { second, minute } = this.state
+
+        if (this.state.showQuestions) {
             return (
                 <div className="questionspage">
-                    <Timer/>
+                    <div>
+                        <label class="timerText">Geçen Süre: {minute < 10 ? `0${minute}` : minute}:{second < 10 ? `0${second}` : second}</label>
+                    </div>
                     <div class="col-md-7">
                         <label class="questionsTitle">Sorular</label>
                     </div>    
-                    <Questions numberSelections={this.getSelectedNumbers()} questioncount={this.state.questioncount}/>                                                            
+                    <Questions numberSelections={this.getSelectedNumbers()} questioncount={this.state.questioncount} callbackFromParent={this.toggleGameCompleted}/>                                                            
                 </div>
             );            
         } else {        
@@ -180,6 +214,7 @@ class Questions extends React.Component {
         this.setState({
             showAnswers : 1
         });
+        this.props.callbackFromParent();
     }
 
     render() {
@@ -252,48 +287,6 @@ class Question extends React.Component {
                 </div>                                    
             </div>
         );
-    }    
-}
-
-class Timer extends React.Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            minute : 0,
-            second : 0
-        }
-    }
-
-    componentDidMount() {
-        this.myInterval = setInterval( () => {
-            const { second, minute } = this.state
-
-            this.setState({
-                second : second + 1
-            });
-
-            if (second === 59) {
-                this.setState({
-                    second : 0,
-                    minute : minute + 1
-                });    
-            }
-        }, 1000)
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.myInterval)
-    }
-    
-    render() {
-        const { second, minute } = this.state
-
-        return (
-            <div>
-                <label class="timerText">Geçen Süre: {minute < 10 ? `0${minute}` : minute}:{second < 10 ? `0${second}` : second}</label>
-            </div>
-        )
     }    
 }
 
