@@ -127,7 +127,7 @@ class NumberCheckBox extends React.Component {
         );
     }    
 }
-  
+
 class Questions extends React.Component {
     constructor(props) {
         super(props);
@@ -146,13 +146,23 @@ class Questions extends React.Component {
             numbersArray.push( [] );
         }
 
-        for (let i = 0; i < this.props.questioncount; i++) {
-            numbersArray[i].push( this.props.numberSelections[Math.floor(Math.random() * this.props.numberSelections.length)] );
-            numbersArray[i].push( Math.floor(Math.random() * 10) + 1 ); 
-        }        
+        let currentIndex = 0
+
+        while ( currentIndex < this.props.questioncount ) {
+
+            let numberValue = this.props.numberSelections[Math.floor(Math.random() * this.props.numberSelections.length)];
+            let secondNumberValue = Math.floor(Math.random() * 10) + 1
+
+            // Avoid duplication
+            if ( !numbersArray.filter( a => ( a[0] === numberValue && a[1] === secondNumberValue ) || 
+                                            ( a[1] === numberValue && a[0] === secondNumberValue ) ).length ) {
+                numbersArray[currentIndex].push( numberValue );
+                numbersArray[currentIndex++].push( secondNumberValue );                                                     
+            }
+        }     
 
         return numbersArray;
-    }
+    }    
 
     createTable = () => {
         let table = []
