@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/softengilker/ReactMultiplicationGame/static/css/main.07bb31c9.chunk.css",
+    "main.js": "/softengilker/ReactMultiplicationGame/static/js/main.66cd319c.chunk.js",
+    "main.js.map": "/softengilker/ReactMultiplicationGame/static/js/main.66cd319c.chunk.js.map",
+    "runtime-main.js": "/softengilker/ReactMultiplicationGame/static/js/runtime-main.a35a39d7.js",
+    "runtime-main.js.map": "/softengilker/ReactMultiplicationGame/static/js/runtime-main.a35a39d7.js.map",
+    "static/css/2.64a99b10.chunk.css": "/softengilker/ReactMultiplicationGame/static/css/2.64a99b10.chunk.css",
+    "static/js/2.ab04b366.chunk.js": "/softengilker/ReactMultiplicationGame/static/js/2.ab04b366.chunk.js",
+    "static/js/2.ab04b366.chunk.js.map": "/softengilker/ReactMultiplicationGame/static/js/2.ab04b366.chunk.js.map",
+    "index.html": "/softengilker/ReactMultiplicationGame/index.html",
+    "precache-manifest.e7db28338d93b0f6a6e97f99b72ba6ad.js": "/softengilker/ReactMultiplicationGame/precache-manifest.e7db28338d93b0f6a6e97f99b72ba6ad.js",
+    "service-worker.js": "/softengilker/ReactMultiplicationGame/service-worker.js",
+    "static/css/2.64a99b10.chunk.css.map": "/softengilker/ReactMultiplicationGame/static/css/2.64a99b10.chunk.css.map",
+    "static/css/main.07bb31c9.chunk.css.map": "/softengilker/ReactMultiplicationGame/static/css/main.07bb31c9.chunk.css.map",
+    "static/js/2.ab04b366.chunk.js.LICENSE": "/softengilker/ReactMultiplicationGame/static/js/2.ab04b366.chunk.js.LICENSE"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.a35a39d7.js",
+    "static/css/2.64a99b10.chunk.css",
+    "static/js/2.ab04b366.chunk.js",
+    "static/css/main.07bb31c9.chunk.css",
+    "static/js/main.66cd319c.chunk.js"
+  ]
+}
