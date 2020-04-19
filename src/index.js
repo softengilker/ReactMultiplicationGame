@@ -13,7 +13,11 @@ class MultiplicationGame extends React.Component {
             questioncount : 5,
             numberSelections : Array(8).fill( false ),
             minute : 0,
-            second : 0
+            second : 0,
+            blankAnswerCount : 0,
+            correctAnswerCount : 0,
+            wrongAnswerCount : 0,
+            gameCompleted : false
         }
         this.showQuestionsButtonClick = this.showQuestionsButtonClick.bind(this);
         this.onQuestionCountChanged = this.onQuestionCountChanged.bind(this);
@@ -87,11 +91,20 @@ class MultiplicationGame extends React.Component {
         return table;
     }
 
-    toggleGameCompleted = () => {
+    toggleGameCompleted = (numbers) => {
+        
+        let counterFunc = (val) => { return numbers.filter(a => a[2] === val).length; }
+
         this.stopTimer();
+        this.setState({
+            blankAnswerCount : counterFunc(0),
+            correctAnswerCount : counterFunc(1),
+            wrongAnswerCount : counterFunc(2),
+            gameCompleted : true
+        });
     }     
 
-    renderRadioButton(number) {
+    renderRadioButton(number) {        
         return (
             <label class='radio-inline giveSpace'>
                 <input  type='radio' value={number} checked={this.state.questioncount == number} onChange={this.onQuestionCountChanged} /> {number}
@@ -99,6 +112,15 @@ class MultiplicationGame extends React.Component {
         );
     }
  
+    renderGameResults = () => {
+        if (this.state.gameCompleted) {
+            let completedMin = 60 * this.state.minute + this.state.second;
+
+            return( <label class="gameResultLabel">Doğru Sayısı : {this.state.correctAnswerCount}, Yanlış Sayısı : {this.state.wrongAnswerCount}, 
+                Boş veya geçersiz sayısı : {this.state.blankAnswerCount}, Bitirme Süresi : {completedMin} saniye.</label> );
+        }
+    }
+
     render() {
         const { second, minute } = this.state
 
@@ -111,7 +133,8 @@ class MultiplicationGame extends React.Component {
                     <div class="col-md-7">
                         <label class="questionsTitle">Sorular</label>
                     </div>    
-                    <Questions numberSelections={this.getSelectedNumbers()} questioncount={this.state.questioncount} callbackFromParent={this.toggleGameCompleted}/>                                                            
+                    <Questions numberSelections={this.getSelectedNumbers()} questioncount={this.state.questioncount} callbackFromParent={this.toggleGameCompleted}/>
+                    {this.renderGameResults()}
                 </div>
             );            
         } else {        
@@ -173,6 +196,10 @@ class Questions extends React.Component {
         this.checkAnswersButtonClick = this.checkAnswersButtonClick.bind(this);
     }       
 
+    /*  numbers is a matrix for each question. The zero index refers to the generated number value from the user selections
+        1th index refers to the randamly generated value between 1 to 10
+        2th index refers to the answer status of the question: 0: blank or invalid, 1: correct, 2: wrong
+    */
     generateNumberValues = () => {
         
         let numbersArray = [];
@@ -191,20 +218,29 @@ class Questions extends React.Component {
             // Avoid duplication
             if ( !numbersArray.filter( a => ( a[0] === numberValue && a[1] === secondNumberValue ) || 
                                             ( a[1] === numberValue && a[0] === secondNumberValue ) ).length ) {
-                numbersArray[currentIndex].push( numberValue );
-                numbersArray[currentIndex++].push( secondNumberValue );                                                     
+                numbersArray[currentIndex].push( numberValue );                
+                numbersArray[currentIndex].push( secondNumberValue );                                                     
+                numbersArray[currentIndex++].push( 0 );
             }
         }     
 
         return numbersArray;
     }    
 
+    changeQuestionInputValue(index, answerStatus) {
+        this.state.numbers[index][2] = answerStatus;
+    }
+
     createTable = () => {
         let table = []
     
         // Outer loop to create parent
         for (let i = 0; i < this.props.questioncount; i++) {
-          table.push( <Question number={this.state.numbers[i][0]} secondNumber={this.state.numbers[i][1]} showanswer={this.state.showAnswers} numberindex={i+1} /> )
+          table.push( <Question number={this.state.numbers[i][0]} 
+                                secondNumber={this.state.numbers[i][1]} 
+                                showanswer={this.state.showAnswers} 
+                                numberindex={i+1} 
+                                changeInputValue={this.changeQuestionInputValue.bind(this)}/> )
           table.push( <br/> )
         }
         return table
@@ -214,7 +250,7 @@ class Questions extends React.Component {
         this.setState({
             showAnswers : 1
         });
-        this.props.callbackFromParent();
+        this.props.callbackFromParent(this.state.numbers);
     }
 
     render() {
@@ -279,6 +315,9 @@ class Question extends React.Component {
             resultText : resultTextValue,
             answerlabelClass : answerlabelClassValue
         });
+
+        // Change value in the parent component
+        this.props.changeInputValue(this.props.numberindex - 1, answerStatusValue);
     }    
 
     render() {

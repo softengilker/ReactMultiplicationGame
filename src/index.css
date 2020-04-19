@@ -57,3 +57,9 @@ code {
   font-weight: 600;
   font-size: 23px;
 }
+
+.gameResultLabel {
+  margin-top: 30px;
+  font-size: 19px;
+  color : blue;
+}
