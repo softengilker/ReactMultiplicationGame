@@ -239,34 +239,45 @@ class Question extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            numberInputValue : ''                       
+            numberInputValue : '',
+            // 0: blank or invalid, 1: correct, 2: wrong
+            answerStatus : 0,
+            resultText : 'Lütfen bir değer giriniz',
+            answerlabelClass : 'answerWarning'                         
         }
     }       
 
     showResult = () => {
         if ( this.props.showanswer === 1 ) {
-            let resultText = '';
-            let labelClass = 'answerWarning';
-           
-            if (this.state.numberInputValue === '') {
-                resultText = 'Lütfen bir değer giriniz'
-            } else if ( isNaN(this.state.numberInputValue) ) {
-                resultText = 'Lütfen bir numarasal bir değer giriniz'
-            } else if ( parseInt(this.props.number) * parseInt(this.props.secondNumber) === parseInt(this.state.numberInputValue) ) {
-                resultText = 'Doğru'
-                labelClass = 'answerTrue';
-            } else {
-                resultText = 'Yanlış'
-                labelClass = 'answerFalse';
-            }
-
-            return ( <label class={labelClass}>{resultText}</label>);
+            return ( <label class={this.state.answerlabelClass}>{this.state.resultText}</label>);
         }
     }
 
     updateInputValue(evt) {
+        let inputValue = evt.target.value
+        let resultTextValue = 'Lütfen bir değer giriniz'
+        let answerStatusValue = 0
+        let answerlabelClassValue = 'answerWarning'
+
+        if (inputValue === '') {
+            resultTextValue = 'Lütfen bir değer giriniz'
+        } else if ( isNaN(inputValue) ) {
+            resultTextValue = 'Lütfen bir numarasal bir değer giriniz'
+        } else if ( parseInt(this.props.number) * parseInt(this.props.secondNumber) === parseInt(inputValue) ) {
+            resultTextValue = 'Doğru'
+            answerStatusValue = 1
+            answerlabelClassValue = 'answerTrue'
+        } else {
+            resultTextValue = 'Yanlış'
+            answerStatusValue = 2
+            answerlabelClassValue = 'answerFalse'
+        }        
+
         this.setState({
-            numberInputValue: evt.target.value
+            numberInputValue: inputValue,
+            answerStatus : answerStatusValue,
+            resultText : resultTextValue,
+            answerlabelClass : answerlabelClassValue
         });
     }    
 
