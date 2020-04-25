@@ -250,6 +250,7 @@ class Questions extends React.Component {
         this.setState({
             showAnswers : 1
         });
+        document.getElementById("checkResultBtn").disabled = true;
         this.props.callbackFromParent(this.state.numbers);
     }
 
@@ -259,7 +260,7 @@ class Questions extends React.Component {
                 {this.createTable()}
                 <div class="row">
                     <div class="col-md-4">
-                        <Button type="submit" onClick={this.checkAnswersButtonClick}>Yanıtları Kontrol</Button>
+                        <Button id="checkResultBtn" type="submit" onClick={this.checkAnswersButtonClick}>Yanıtları Kontrol</Button>
                     </div>
                     <div class="col-md-4">
                         <Button onClick={() => window.location.reload(false)}>Tekrar Oyna</Button>
