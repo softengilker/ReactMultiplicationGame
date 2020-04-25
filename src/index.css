@@ -58,8 +58,12 @@ code {
   font-size: 23px;
 }
 
-.gameResultLabel {
-  margin-top: 30px;
-  font-size: 19px;
+.resultTable {
+  padding-top: 30px;
+}
+
+.showAnswersCheckBox {
+  padding-top: 5px;
+  font-size: 17px;
   color : blue;
 }

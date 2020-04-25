@@ -57,7 +57,7 @@ class MultiplicationGame extends React.Component {
             showQuestions : true,
             second : 0,
             minute : 0
-        });
+        });        
     }
 
     toggleChangeNumber = ( index ) => {
@@ -116,8 +116,42 @@ class MultiplicationGame extends React.Component {
         if (this.state.gameCompleted) {
             let completedMin = 60 * this.state.minute + this.state.second;
 
-            return( <label class="gameResultLabel">Doğru Sayısı : {this.state.correctAnswerCount}, Yanlış Sayısı : {this.state.wrongAnswerCount}, 
-                Boş veya geçersiz sayısı : {this.state.blankAnswerCount}, Bitirme Süresi : {completedMin} saniye.</label> );
+            return(
+                <div class="resultTable">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label class="answerTrue">Doğru Sayısı:</label>
+                        </div>
+                        <div class="col-md-1">
+                            <label class="answerTrue">{this.state.correctAnswerCount}</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label class="answerFalse">Yanlış Sayısı:</label>
+                        </div>
+                        <div class="col-md-1">
+                            <label class="answerFalse">{this.state.wrongAnswerCount}</label>                            
+                        </div>
+                    </div>   
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label class="answerWarning">Boş/Geçersiz Sayısı:</label>
+                        </div>
+                        <div class="col-md-1">
+                            <label class="answerWarning">{this.state.blankAnswerCount}</label>                            
+                        </div>
+                    </div>   
+                    <div class="row">
+                        <div class="col-md-2">
+                            Bitirme Süresi:
+                        </div>
+                        <div class="col-md-2">
+                            {completedMin} saniye
+                        </div>
+                    </div>                                                                              
+                </div>
+            );
         }
     }
 
@@ -136,7 +170,7 @@ class MultiplicationGame extends React.Component {
                     <Questions numberSelections={this.getSelectedNumbers()} questioncount={this.state.questioncount} callbackFromParent={this.toggleGameCompleted}/>
                     {this.renderGameResults()}
                 </div>
-            );            
+            );                     
         } else {        
             return (
                 <div class="questionspage">
@@ -229,6 +263,10 @@ class Questions extends React.Component {
         return numbersArray;
     }    
 
+    componentDidMount() {
+        document.getElementById("inputtext1").focus();
+    }
+
     changeQuestionInputValue(index, answerStatus) {
         this.state.numbers[index][2] = answerStatus;
     }
@@ -266,7 +304,7 @@ class Questions extends React.Component {
     showCheckBox = () => {
         // Show the checkbox if the game is completed and there is some incorrect or blank answers
         if ( this.state.showAnswers === 1 && this.state.numbers.filter(a => a[2] === 1).length !== this.props.questioncount ) {
-            return( <div>Doğru Yanıtları Göster : <input type="checkbox" checked={this.state.showCorrectAnswer} onChange={this.checkShowCorrectAnswers} /></div> );
+            return( <div class="showAnswersCheckBox">Doğru Yanıtları Göster : <input type="checkbox" checked={this.state.showCorrectAnswer} onChange={this.checkShowCorrectAnswers} /></div> );
         }
     }
 
@@ -275,19 +313,16 @@ class Questions extends React.Component {
             <div className="game">
                 {this.createTable()}
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <Button id="checkResultBtn" type="submit" onClick={this.checkAnswersButtonClick}>Yanıtları Kontrol</Button>
                     </div>
-                    <div class="col-md-4">
-                        <Button onClick={() => window.location.reload(false)}>Tekrar Oyna</Button>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-4">
-                        <br/>
+                    <div class="col-md-3">
                         {this.showCheckBox()}
                     </div>
-                </div>                
+                    <div class="col-md-3">
+                        <Button onClick={() => window.location.reload(false)}>Tekrar Oyna</Button>
+                    </div>
+                </div>               
             </div>
         );
     }    
@@ -319,6 +354,8 @@ class Question extends React.Component {
         }        
     }
 
+
+
     updateInputValue(evt) {
         let inputValue = evt.target.value
         let resultTextValue = 'Lütfen bir değer giriniz'
@@ -328,7 +365,7 @@ class Question extends React.Component {
         if (inputValue === '') {
             resultTextValue = 'Lütfen bir değer giriniz'
         } else if ( isNaN(inputValue) ) {
-            resultTextValue = 'Lütfen bir numarasal bir değer giriniz'
+            resultTextValue = 'Lütfen numarasal bir değer giriniz'
         } else if ( this.state.correctAnswer === parseInt(inputValue) ) {
             resultTextValue = 'Doğru'
             answerStatusValue = 1
