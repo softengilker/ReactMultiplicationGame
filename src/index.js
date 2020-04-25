@@ -191,9 +191,11 @@ class Questions extends React.Component {
         super(props);
         this.state = {
             showAnswers : 0,
+            showCorrectAnswer : 0,
             numbers : this.generateNumberValues()
         }
         this.checkAnswersButtonClick = this.checkAnswersButtonClick.bind(this);
+        this.checkShowCorrectAnswers = this.checkShowCorrectAnswers.bind(this);
     }       
 
     /*  numbers is a matrix for each question. The zero index refers to the generated number value from the user selections
@@ -238,8 +240,9 @@ class Questions extends React.Component {
         for (let i = 0; i < this.props.questioncount; i++) {
           table.push( <Question number={this.state.numbers[i][0]} 
                                 secondNumber={this.state.numbers[i][1]} 
-                                showanswer={this.state.showAnswers} 
-                                numberindex={i+1} 
+                                showanswer={this.state.showAnswers}
+                                showcorrectanswer={this.state.showCorrectAnswer}
+                                numberindex={i+1}
                                 changeInputValue={this.changeQuestionInputValue.bind(this)}/> )
           table.push( <br/> )
         }
@@ -254,6 +257,19 @@ class Questions extends React.Component {
         this.props.callbackFromParent(this.state.numbers);
     }
 
+    checkShowCorrectAnswers() {
+        this.setState({
+            showCorrectAnswer : this.state.showCorrectAnswer === 0 ? 1 : 0
+        });
+    }
+
+    showCheckBox = () => {
+        // Show the checkbox if the game is completed and there is some incorrect or blank answers
+        if ( this.state.showAnswers === 1 && this.state.numbers.filter(a => a[2] === 1).length !== this.props.questioncount ) {
+            return( <div>Doğru Yanıtları Göster : <input type="checkbox" checked={this.state.showCorrectAnswer} onChange={this.checkShowCorrectAnswers} /></div> );
+        }
+    }
+
     render() {
         return (
             <div className="game">
@@ -264,6 +280,12 @@ class Questions extends React.Component {
                     </div>
                     <div class="col-md-4">
                         <Button onClick={() => window.location.reload(false)}>Tekrar Oyna</Button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <br/>
+                        {this.showCheckBox()}
                     </div>
                 </div>                
             </div>
@@ -280,7 +302,8 @@ class Question extends React.Component {
             // 0: blank or invalid, 1: correct, 2: wrong
             answerStatus : 0,
             resultText : 'Lütfen bir değer giriniz',
-            answerlabelClass : 'answerWarning'                         
+            answerlabelClass : 'answerWarning',
+            correctAnswer : parseInt(this.props.number) * parseInt(this.props.secondNumber)                         
         }
     }       
 
@@ -288,6 +311,12 @@ class Question extends React.Component {
         if ( this.props.showanswer === 1 ) {
             return ( <label class={this.state.answerlabelClass}>{this.state.resultText}</label>);
         }
+    }
+
+    showCorrectAnswer = () => {
+        if ( this.props.showcorrectanswer === 1 && this.state.answerStatus !== 1 ) {
+            return ( <label class="answerTrue">Doğru Yanıt : {this.state.correctAnswer}</label>);
+        }        
     }
 
     updateInputValue(evt) {
@@ -300,7 +329,7 @@ class Question extends React.Component {
             resultTextValue = 'Lütfen bir değer giriniz'
         } else if ( isNaN(inputValue) ) {
             resultTextValue = 'Lütfen bir numarasal bir değer giriniz'
-        } else if ( parseInt(this.props.number) * parseInt(this.props.secondNumber) === parseInt(inputValue) ) {
+        } else if ( this.state.correctAnswer === parseInt(inputValue) ) {
             resultTextValue = 'Doğru'
             answerStatusValue = 1
             answerlabelClassValue = 'answerTrue'
@@ -332,10 +361,13 @@ class Question extends React.Component {
                 </div>
                 <div class="col-md-1">
                     <input type="text" class="form-control" value={this.state.numberInputValue} onChange={evt => this.updateInputValue(evt)} id={inputidval}/>
-                </div>
-                <div class="col-md-4">
+                </div> 
+                <div class="col-md-3">
                     {this.showResult()}
-                </div>                                    
+                </div>
+                <div class="col-md-2">
+                    {this.showCorrectAnswer()}
+                </div>                                                     
             </div>
         );
     }    
